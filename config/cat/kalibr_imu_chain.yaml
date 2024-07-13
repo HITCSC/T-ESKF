@@ -1,0 +1,57 @@
+%YAML:1.0
+
+imu0:
+  T_i_b:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+
+  # #Accelerometer
+  # accelerometer_noise_density: 0.023302388087123056 
+  # accelerometer_random_walk: 2.874787967389593e-03 
+  # #Gyroscope
+  # gyroscope_noise_density: 8.705645580608029e-03 
+  # gyroscope_random_walk: 3.339353053874362e-04
+
+  #Accelerometer
+  accelerometer_noise_density: 0.0063302388087123056 
+  accelerometer_random_walk: 2.874787967389593e-03 
+  #Gyroscope
+  gyroscope_noise_density: 8.705645580608029e-04 
+  gyroscope_random_walk: 3.339353053874362e-05
+
+
+  rostopic: '/mavros/imu/data_raw' #Make sure this is correct
+  update_rate: 200.0 #Make sure this is correct
+
+  time_offset: 0.001290394405371421
+  # three different modes supported:
+  # "calibrated" (same as "kalibr"), "kalibr", "rpng"
+  model: "kalibr"
+  # how to get from Kalibr imu.yaml result file:
+  #   - Tw is imu0:gyroscopes:M:
+  #   - R_IMUtoGYRO: is imu0:gyroscopes:M:
+  #   - Ta is imu0:accelerometers:M:
+  #   - R_IMUtoACC not used by Kalibr
+  #   - Tg is imu0:gyroscopes:A:
+  Tw:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoGYRO:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Ta:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoACC:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Tg:
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]
