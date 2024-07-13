@@ -1,10 +1,10 @@
 
 # T-ESKF: Transformed Error-State Kalman Filter for Consistent Visual-Inertial Navigation
-We propose a novel approach to address inconsistency caused by observability mismatch in VINS. The key idea is to apply a linear time-varying transformation to the error-state. This transformation is designed to make the transformed Jacobians independent of states, thereby preserving the correct observability of the transformed system against variations in linearization points. Compared to Lie group-based methods, the proposed method is more straightforward and flexible, as it does not require redefining state variables on manifolds. We also provide a  [supplemental material](./docs/teskf_doc/Supplementary_Material.pdf) for T-ESKF.
+We propose a novel approach to address inconsistency caused by observability mismatch in VINS. The key idea is to apply a linear time-varying transformation to the error-state. This transformation is designed to make the transformed Jacobians independent of states, thereby preserving the correct observability of the transformed system against variations in linearization points. Compared to Lie group-based methods, the proposed method is more straightforward and flexible, as it does not require redefining state variables on manifolds. We also provide a  [supplemental material](./teskf_doc/Supplementary_Material.pdf) for T-ESKF.
 
 The code is developed on [OpenVINS](https://docs.openvins.com/index.html). During the development of the T-ESKF, utmost care is taken to preserve the original architecture of OpenVINS. This allows (standard) ESKF and FEJ-ESKF to remain in the codebase. Moreover, RI-EKF is also integrated into this codebase.
 
-<div align=center><img src="docs/teskf_doc/exp08.gif" width="960"></div>
+<div align=center><img src="./teskf_doc/exp08.gif" width="960"></div>
 
 ## Build 
 We have tested the codebase in Ubuntu **20.04** with **ROS Noetic**. 
