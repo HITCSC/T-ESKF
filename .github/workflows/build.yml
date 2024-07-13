@@ -2,7 +2,7 @@ name: ROS Free Workflow
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
 
 jobs:
