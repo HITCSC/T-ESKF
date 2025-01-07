@@ -1,7 +1,7 @@
 
 # T-ESKF: Transformed Error-State Kalman Filter for Consistent Visual-Inertial Navigation
 
-[![ROS 1 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml) [![ROS 2 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml) [![ROS Free Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build.yml)
+[![ROS 1 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml) [![ROS 2 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml) 
 
 We propose a novel approach to address inconsistency caused by observability mismatch in VINS. The key idea is to apply a linear time-varying transformation to the error-state. This transformation is designed to make the unobservable subspace of the transformed error-state system independent of states, thereby preserving the correct observability of the transformed system against variations in linearization points. Compared to Lie group-based methods, the proposed method is more straightforward and flexible. We also provide a  [supplemental material](./teskf_doc/Supplementary_Material.pdf) for T-ESKF.
 
