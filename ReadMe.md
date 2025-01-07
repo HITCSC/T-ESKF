@@ -3,7 +3,7 @@
 
 [![ROS 1 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros1.yml) [![ROS 2 Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build_ros2.yml) [![ROS Free Workflow](https://github.com/HITCSC/T-ESKF/actions/workflows/build.yml/badge.svg)](https://github.com/HITCSC/T-ESKF/actions/workflows/build.yml)
 
-We propose a novel approach to address inconsistency caused by observability mismatch in VINS. The key idea is to apply a linear time-varying transformation to the error-state. This transformation is designed to make the transformed Jacobians independent of states, thereby preserving the correct observability of the transformed system against variations in linearization points. Compared to Lie group-based methods, the proposed method is more straightforward and flexible, as it does not require redefining state variables on manifolds. We also provide a  [supplemental material](./teskf_doc/Supplementary_Material.pdf) for T-ESKF.
+We propose a novel approach to address inconsistency caused by observability mismatch in VINS. The key idea is to apply a linear time-varying transformation to the error-state. This transformation is designed to make the unobservable subspace of the transformed error-state system independent of states, thereby preserving the correct observability of the transformed system against variations in linearization points. Compared to Lie group-based methods, the proposed method is more straightforward and flexible. We also provide a  [supplemental material](./teskf_doc/Supplementary_Material.pdf) for T-ESKF.
 
 The code is developed on [OpenVINS](https://docs.openvins.com/index.html). During the development of the T-ESKF, utmost care is taken to preserve the original architecture of OpenVINS. This allows (standard) ESKF and FEJ-ESKF to remain in the codebase. Moreover, RI-EKF is also integrated into this codebase.
 
@@ -46,3 +46,14 @@ There are two ways to run the code:
     roslaunch ov_msckf serial.launch config:=euroc_mav dataset:="V1_01_easy" use_tekf:=true tekf_method:=2  # RI-EKF 
     roslaunch ov_msckf serial.launch config:=euroc_mav dataset:="V1_01_easy" use_tekf:=true                 # T-ESKF 
     ```
+
+## Citation
+If you found this code/work to be useful in your own research, please considering citing the following information.
+```
+@ARTICLE{tian2024teskf,
+  title={T-ESKF: Transformed Error-State Kalman Filter for Consistent Visual-Inertial Navigation}, 
+  author={Tian, Chungeng and Hao, Ning and He, Fenghua},
+  journal={IEEE Robotics and Automation Letters}, 
+  year={2024},
+  doi={10.1109/LRA.2024.3524905}}
+```
