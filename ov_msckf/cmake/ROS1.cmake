@@ -79,6 +79,10 @@ endif ()
 list(APPEND LIBRARY_SOURCES
         src/dummy.cpp
         src/sim/Simulator.cpp
+        src/robot_sim/DualWheelRobot.cpp
+        src/robot_sim/Trajectory.cpp
+        src/robot_sim/PIDController.cpp
+        src/robot_sim/RLController.cpp
         src/state/State.cpp
         src/state/StateHelper.cpp
         src/state/Propagator.cpp
@@ -154,6 +158,22 @@ install(TARGETS test_sim_meas
 add_executable(test_sim_repeat src/test_sim_repeat.cpp)
 target_link_libraries(test_sim_repeat ov_msckf_lib ${thirdparty_libraries})
 install(TARGETS test_sim_repeat
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+add_executable(robot_simulation src/robot_simulation.cpp)
+target_link_libraries(robot_simulation ov_msckf_lib ${thirdparty_libraries})
+install(TARGETS robot_simulation
+        ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+add_executable(test_robot_simulation src/test_robot_simulation.cpp)
+target_link_libraries(test_robot_simulation ov_msckf_lib ${thirdparty_libraries})
+install(TARGETS test_robot_simulation
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

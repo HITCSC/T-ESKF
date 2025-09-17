@@ -56,6 +56,10 @@ list(APPEND ament_libraries
 list(APPEND LIBRARY_SOURCES
         src/dummy.cpp
         src/sim/Simulator.cpp
+        src/robot_sim/DualWheelRobot.cpp
+        src/robot_sim/Trajectory.cpp
+        src/robot_sim/PIDController.cpp
+        src/robot_sim/RLController.cpp
         src/state/State.cpp
         src/state/StateHelper.cpp
         src/state/Propagator.cpp
@@ -107,6 +111,16 @@ add_executable(test_sim_repeat src/test_sim_repeat.cpp)
 ament_target_dependencies(test_sim_repeat ${ament_libraries})
 target_link_libraries(test_sim_repeat ov_msckf_lib ${thirdparty_libraries})
 install(TARGETS test_sim_repeat DESTINATION lib/${PROJECT_NAME})
+
+add_executable(robot_simulation src/robot_simulation.cpp)
+ament_target_dependencies(robot_simulation ${ament_libraries})
+target_link_libraries(robot_simulation ov_msckf_lib ${thirdparty_libraries})
+install(TARGETS robot_simulation DESTINATION lib/${PROJECT_NAME})
+
+add_executable(test_robot_simulation src/test_robot_simulation.cpp)
+ament_target_dependencies(test_robot_simulation ${ament_libraries})
+target_link_libraries(test_robot_simulation ov_msckf_lib ${thirdparty_libraries})
+install(TARGETS test_robot_simulation DESTINATION lib/${PROJECT_NAME})
 
 # Install launch and config directories
 install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch/)
