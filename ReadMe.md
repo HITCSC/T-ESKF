@@ -20,7 +20,7 @@ sudo apt-get install libeigen3-dev libboost-all-dev libceres-dev
 # Build T-ESKF
 mkdir -p ~/catkin_ws/src  
 cd ~/catkin_ws/src 
-git clone https://github.com/HITCSC-Robotics/T-ESKF 
+git clone https://github.com/HITCSC/T-ESKF 
 cd ~/catkin_ws
 catkin build 
 source devel/setup.bash
