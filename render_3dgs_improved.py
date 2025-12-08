@@ -312,6 +312,8 @@ def render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
     sigma_camera = 0.5 * (sigma_camera + sigma_camera.transpose(1, 2))
     
     # Anti-aliasing: Add low-pass filter (optional)
+    # Implements Mip-Splatting technique: extends 2D covariance with isotropic blur kernel
+    # to prevent aliasing artifacts in the rendered image
     if use_antialiasing:
         # Add small isotropic component for anti-aliasing
         sigma_camera[:, 0, 0] += aa_kernel_size
