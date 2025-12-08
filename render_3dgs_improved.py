@@ -118,12 +118,12 @@ def project_points(pc, c2w, fx, fy, cx, cy):
         uv: Pixel coordinates [N, 2]
         x, y, z: Camera space coordinates [N]
     """
-    # Compute world-to-camera efficiently
+    # Compute world-to-camera efficiently using einsum
     R = c2w[:3, :3]
     t = c2w[:3, 3]
     
-    # Transform to camera space (optimized)
-    pc_cam = (R.t() @ (pc - t).t()).t()  # [N, 3]
+    # Transform to camera space: R^T @ (pc - t) for each point
+    pc_cam = torch.einsum('ij,nj->ni', R.t(), pc - t)  # [N, 3]
     x, y, z = pc_cam.unbind(dim=-1)
     
     # Project to image plane
@@ -234,7 +234,7 @@ def scale_intrinsics(H, W, H_src, W_src, fx, fy, cx, cy):
 def render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
            near=2e-3, far=100, pix_guard=64, T=16, min_conis=1e-6,
            chi_square_clip=9.21, alpha_max=0.99, alpha_cutoff=1/255.,
-           use_antialiasing=True):
+           use_antialiasing=True, aa_kernel_size=0.3):
     """
     Improved 3D Gaussian Splatting renderer with SOTA optimizations.
     
@@ -254,6 +254,7 @@ def render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
         alpha_max: Maximum alpha value
         alpha_cutoff: Alpha cutoff threshold
         use_antialiasing: Enable anti-aliasing
+        aa_kernel_size: Anti-aliasing kernel size (blur amount)
     
     Returns:
         Rendered image [H, W, 3]
@@ -313,9 +314,8 @@ def render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
     # Anti-aliasing: Add low-pass filter (optional)
     if use_antialiasing:
         # Add small isotropic component for anti-aliasing
-        blur = 0.3  # Blur kernel size
-        sigma_camera[:, 0, 0] += blur
-        sigma_camera[:, 1, 1] += blur
+        sigma_camera[:, 0, 0] += aa_kernel_size
+        sigma_camera[:, 1, 1] += aa_kernel_size
     
     # Ensure positive definiteness via eigendecomposition
     evals, evecs = torch.linalg.eigh(sigma_camera)
@@ -495,21 +495,38 @@ def render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Render novel views using 3D Gaussian Splatting')
+    parser.add_argument('--max_frames', type=int, default=None, 
+                       help='Maximum number of frames to render (default: all frames)')
+    parser.add_argument('--scene', type=str, default='kitchen',
+                       help='Scene name (default: kitchen)')
+    parser.add_argument('--iteration', type=int, default=7000,
+                       help='Training iteration to load (default: 7000)')
+    parser.add_argument('--use_aa', action='store_true', default=True,
+                       help='Enable anti-aliasing (default: True)')
+    args = parser.parse_args()
+    
     # Main rendering loop
-    pos = torch.load('trained_gaussians/kitchen/pos_7000.pt').cuda()
-    opacity_raw = torch.load('trained_gaussians/kitchen/opacity_raw_7000.pt').cuda()
-    f_dc = torch.load('trained_gaussians/kitchen/f_dc_7000.pt').cuda()
-    f_rest = torch.load('trained_gaussians/kitchen/f_rest_7000.pt').cuda()
-    scale_raw = torch.load('trained_gaussians/kitchen/scale_raw_7000.pt').cuda()
-    q_raw = torch.load('trained_gaussians/kitchen/q_rot_7000.pt').cuda()
+    scene = args.scene
+    iteration = args.iteration
+    
+    pos = torch.load(f'trained_gaussians/{scene}/pos_{iteration}.pt').cuda()
+    opacity_raw = torch.load(f'trained_gaussians/{scene}/opacity_raw_{iteration}.pt').cuda()
+    f_dc = torch.load(f'trained_gaussians/{scene}/f_dc_{iteration}.pt').cuda()
+    f_rest = torch.load(f'trained_gaussians/{scene}/f_rest_{iteration}.pt').cuda()
+    scale_raw = torch.load(f'trained_gaussians/{scene}/scale_raw_{iteration}.pt').cuda()
+    q_raw = torch.load(f'trained_gaussians/{scene}/q_rot_{iteration}.pt').cuda()
 
-    cam_parameters = np.load('out_colmap/kitchen/cam_meta.npy', allow_pickle=True).item()
-    orbit_c2ws = torch.load('camera_trajectories/kitchen_orbit.pt').cuda()
+    cam_parameters = np.load(f'out_colmap/{scene}/cam_meta.npy', allow_pickle=True).item()
+    orbit_c2ws = torch.load(f'camera_trajectories/{scene}_orbit.pt').cuda()
 
     sigma = build_sigma_from_params(scale_raw, q_raw)
 
     with torch.no_grad():
-        for i, c2w_i in tqdm(enumerate(orbit_c2ws), desc="Rendering frames"):
+        num_frames = len(orbit_c2ws) if args.max_frames is None else min(args.max_frames, len(orbit_c2ws))
+        for i, c2w_i in tqdm(enumerate(orbit_c2ws[:num_frames]), desc="Rendering frames", total=num_frames):
             c2w = c2w_i
 
             H = cam_parameters['height'] // 2
@@ -522,10 +539,8 @@ if __name__ == "__main__":
 
             color = evaluate_sh(f_dc, f_rest, pos, c2w)
             img = render(pos, color, opacity_raw, sigma, c2w, H, W, fx, fy, cx, cy,
-                        use_antialiasing=True)
+                        use_antialiasing=args.use_aa)
 
             Image.fromarray((img.cpu().numpy() * 255).astype(np.uint8)).save(
                 f'novel_views/frame_{i:04d}.png'
             )
-            if i > 10:
-                break
